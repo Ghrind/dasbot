@@ -1,6 +1,5 @@
-require "dasbot/version"
-require "dasbot/console"
-
+require 'active_support'
+require 'active_support/core_ext/string/inflections'
 require 'yaml'
 require 'logger'
 
@@ -8,12 +7,20 @@ require 'logger'
 require 'active_record'
 require 'pg' # postgresql
 
+require 'dasbot/version'
+require 'dasbot/input'
+require 'dasbot/server'
+
 module Dasbot
   def self.init!
     return false if @_initialized
     init_database
     load_application
     @_initialized = true
+  end
+
+  def self.table_name_prefix
+    'dasbot_'
   end
 
   def self.root
