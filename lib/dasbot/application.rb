@@ -14,9 +14,8 @@ module Dasbot
       klass = "Adapters::#{adapter_name.to_s.camelize}Adapter".constantize
       endpoint_options = klass::DEFAULT_ENDPOINT.merge(options[:endpoint] || {})
       send(endpoint_options[:verb], endpoint_options[:path]) do
-        #result = klass.new(request, params).process!
         request.body.rewind
-        Dasbot::Input.create! params: params, body: request.body.read, adapter: adapter_name
+        CreateInput.run!(adapter_name, request.body.read, params)
         status 200
       end
     end

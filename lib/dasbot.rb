@@ -2,6 +2,7 @@ require 'active_support'
 require 'active_support/core_ext/string/inflections'
 require 'yaml'
 require 'logger'
+require 'service'
 
 # Database
 require 'active_record'
@@ -9,7 +10,11 @@ require 'pg' # postgresql
 
 require 'dasbot/version'
 require 'dasbot/input'
+require 'dasbot/periodic_job'
+require 'dasbot/worker'
 require 'dasbot/server'
+require 'dasbot/create_input'
+require 'dasbot/process_input'
 
 module Dasbot
   def self.init!
