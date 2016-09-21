@@ -22,7 +22,7 @@ module Dasbot
   def self.init!
     return false if @_initialized
     init_database
-    load_application_config
+    boot_application
     load_adapters
     load_application
     @_initialized = true
@@ -58,9 +58,9 @@ module Dasbot
 
   private
 
-  def self.load_application_config
-    config_file_path = File.join(Dasbot.root, 'config', 'application.rb')
-    require config_file_path if File.exist?(config_file_path)
+  def self.boot_application
+    boot_file_path = File.join(Dasbot.root, 'config', 'boot.rb')
+    require boot_file_path if File.exist?(boot_file_path)
   end
 
   def self.load_adapters
