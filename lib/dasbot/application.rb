@@ -13,8 +13,7 @@ module Dasbot
       adapter = Adapters.get(adapter_name)
       endpoint = adapter.endpoint(options[:endpoint])
       send(endpoint[:verb], endpoint[:path]) do
-        request.body.rewind
-        CreateInput.run!(adapter, request.body.read, params)
+        CreateInput.run!(adapter, request, params)
         status 200
       end
     end

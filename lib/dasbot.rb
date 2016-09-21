@@ -8,6 +8,7 @@ require 'service'
 require 'active_record'
 require 'pg' # postgresql
 
+require 'dasbot/event'
 require 'dasbot/version'
 require 'dasbot/input'
 require 'dasbot/adapters'
@@ -52,7 +53,7 @@ module Dasbot
   end
 
   def self.adapters=(*args)
-    @_adapters = Array.wrap(args).map(&:to_sym)
+    @_adapters = Array.wrap(*args).map(&:to_sym)
   end
 
   private
@@ -65,6 +66,8 @@ module Dasbot
   def self.load_adapters
     adapters.each do |adapter_name|
       require_relative("adapters/#{adapter_name}_adapter.rb")
+      adapter = Adapters.get(adapter_name)
+      Adapters.accepted_headers += adapter.accepted_headers
     end
   end
 
