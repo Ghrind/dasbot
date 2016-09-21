@@ -10,6 +10,7 @@ require 'pg' # postgresql
 
 require 'dasbot/version'
 require 'dasbot/input'
+require 'dasbot/adapters'
 require 'dasbot/periodic_job'
 require 'dasbot/worker'
 require 'dasbot/server'
@@ -20,8 +21,14 @@ module Dasbot
   def self.init!
     return false if @_initialized
     init_database
+    load_application_config
+    load_adapters
     load_application
     @_initialized = true
+  end
+
+  def self.has_adapter?(adapter_name)
+    adapters.include?(adapter_name.to_sym)
   end
 
   def self.table_name_prefix
@@ -40,7 +47,26 @@ module Dasbot
     Logger.new(File.join(root, 'log', "#{environment}.log"))
   end
 
+  def self.adapters
+    @_adapters ||= []
+  end
+
+  def self.adapters=(*args)
+    @_adapters = Array.wrap(args).map(&:to_sym)
+  end
+
   private
+
+  def self.load_application_config
+    config_file_path = File.join(Dasbot.root, 'config', 'application.rb')
+    require config_file_path if File.exist?(config_file_path)
+  end
+
+  def self.load_adapters
+    adapters.each do |adapter_name|
+      require_relative("adapters/#{adapter_name}_adapter.rb")
+    end
+  end
 
   def self.init_database
     configuration = YAML::load(IO.read(File.join(root, 'config', 'database.yml')))

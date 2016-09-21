@@ -10,12 +10,11 @@ module Dasbot
     private
 
     def self.adapter(adapter_name, options = {})
-      require_relative("../adapters/#{adapter_name}_adapter.rb")
-      klass = "Adapters::#{adapter_name.to_s.camelize}Adapter".constantize
-      endpoint_options = klass::DEFAULT_ENDPOINT.merge(options[:endpoint] || {})
-      send(endpoint_options[:verb], endpoint_options[:path]) do
+      adapter = Adapters.get(adapter_name)
+      endpoint = adapter.endpoint(options[:endpoint])
+      send(endpoint[:verb], endpoint[:path]) do
         request.body.rewind
-        CreateInput.run!(adapter_name, request.body.read, params)
+        CreateInput.run!(adapter, request.body.read, params)
         status 200
       end
     end

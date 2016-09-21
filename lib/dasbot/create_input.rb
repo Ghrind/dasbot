@@ -9,7 +9,7 @@ module Dasbot
     private
 
     def execute
-      Dasbot::Input.create! params: @params, body: @body, adapter: @adapter, state: 'pending'
+      Dasbot::Input.create! params: @params, body: @body, type: @adapter.input_class, state: 'pending'
     end
   end
 end
