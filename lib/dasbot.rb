@@ -70,6 +70,7 @@ module Dasbot
     adapters.each do |adapter_name|
       require_relative("adapters/#{adapter_name}_adapter.rb")
       adapter = Adapters.get(adapter_name)
+      next unless adapter.respond_to?(:accepted_headers)
       Adapters.accepted_headers += adapter.accepted_headers
     end
   end

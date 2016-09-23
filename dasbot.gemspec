@@ -34,4 +34,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'pry'
   spec.add_dependency 'sinatra'
   spec.add_dependency 'dotenv'
+  spec.add_dependency 'httparty'
 end

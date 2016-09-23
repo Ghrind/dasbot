@@ -1,42 +1,31 @@
 require_relative 'github_adapter/input'
 require_relative 'github_adapter/process_input'
 
-module Adapters
-  module GithubAdapter
-    DEFAULT_ENDPOINT = {
-      path: '/github',
-      verb: :post
-    }
+module GithubAdapter
+  DEFAULT_ENDPOINT = {
+    path: '/github',
+    verb: :post
+  }
 
-    GITHUB_EVENT_HEADER = 'HTTP_X_GITHUB_EVENT'
+  GITHUB_EVENT_HEADER = 'HTTP_X_GITHUB_EVENT'
 
-    def self.adapter_name
-      :github
-    end
+  def self.adapter_name
+    :github
+  end
 
-    def self.accepted_headers
-      [GITHUB_EVENT_HEADER]
-    end
+  def self.accepted_headers
+    [GITHUB_EVENT_HEADER]
+  end
 
-    def self.processor
-      Adapters::GithubAdapter::ProcessInput
-    end
+  def self.processor
+    GithubAdapter::ProcessInput
+  end
 
-    def self.endpoint(options = {})
-      DEFAULT_ENDPOINT.merge(options || {})
-    end
+  def self.endpoint(options = {})
+    DEFAULT_ENDPOINT.merge(options || {})
+  end
 
-    def self.input_class
-      Adapters::GithubAdapter::Input
-    end
-
-   #def initialize(request, params)
-   #  @request = request
-   #  @params = params
-   #end
-
-   #def process!
-   #  { request: @request, params: @params }
-   #end
+  def self.input_class
+    GithubAdapter::Input
   end
 end

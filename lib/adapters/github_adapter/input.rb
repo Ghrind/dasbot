@@ -1,6 +1,4 @@
-module Adapters
-  module GithubAdapter
-    class Input < Dasbot::Input
-    end
+module GithubAdapter
+  class Input < Dasbot::Input
   end
 end
