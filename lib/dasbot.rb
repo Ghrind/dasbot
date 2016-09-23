@@ -1,3 +1,4 @@
+require 'dotenv'
 require 'active_support'
 require 'active_support/core_ext/string/inflections'
 require 'yaml'
@@ -22,6 +23,7 @@ require 'dasbot/handle_input_process_error'
 module Dasbot
   def self.init!
     return false if @_initialized
+    Dotenv.load('.env', ".env.#{environment}", '.env.local')
     init_database
     boot_application
     load_adapters
@@ -72,9 +74,21 @@ module Dasbot
     end
   end
 
+  DATABASE_CONFIGURATION = {
+    adapter: 'postgresql',
+    encoding: 'unicode'
+  }
+
   def self.init_database
-    configuration = YAML::load(IO.read(File.join(root, 'config', 'database.yml')))
-    ActiveRecord::Base.establish_connection(configuration[environment])
+    configuration = DATABASE_CONFIGURATION.merge({
+      username: ENV['DATABASE_USERNAME'],
+      host:     ENV['DATABASE_HOST'],
+      pool:     ENV['DATABASE_POOL'],
+      port:     ENV['DATABASE_PORT'],
+      password: ENV['DATABASE_PASSWORD'],
+      database: ENV['DATABASE_NAME']
+    })
+    ActiveRecord::Base.establish_connection(configuration)
     ActiveRecord::Base.logger = logger
   end
 

@@ -33,4 +33,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'pg', '~> 0.18.4'
   spec.add_dependency 'pry'
   spec.add_dependency 'sinatra'
+  spec.add_dependency 'dotenv'
 end
