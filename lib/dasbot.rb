@@ -17,6 +17,7 @@ require 'dasbot/worker'
 require 'dasbot/server'
 require 'dasbot/create_input'
 require 'dasbot/process_input'
+require 'dasbot/handle_input_process_error'
 
 module Dasbot
   def self.init!

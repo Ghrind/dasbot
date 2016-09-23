@@ -11,11 +11,20 @@ module Dasbot
       @instance.running = false
     end
 
+    def logger
+      @_logger ||= Logger.new(STDOUT)
+    end
+
     def perform_once
-      input = Input.pending.first
-      return false unless input
-      ProcessInput.run!(input)
-      true
+      begin
+        input = Input.pending.first
+        return false unless input
+        ProcessInput.run!(input)
+        return true
+      rescue => error
+        logger.error "#{error.class}: #{error.message} --- #{error.backtrace.join('\n')}"
+        HandleInputProcessError.run!(input, error)
+      end
     end
   end
 end
