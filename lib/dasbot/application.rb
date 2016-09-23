@@ -3,6 +3,10 @@ require 'json'
 
 module Dasbot
   class Application < Sinatra::Application
+    # This config allows connections outside the localhost scope.
+    # It is mandatory for the server to be accessible from outside a docker container.
+    set :bind, '0.0.0.0'
+
     get '/_version' do
       json({ application: self.class.name, dasbot: { version: Dasbot::VERSION } }, pretty: params.key?('pretty') && params['pretty'] != '0')
     end
