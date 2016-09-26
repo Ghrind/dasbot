@@ -40,7 +40,7 @@ module Dasbot
   end
 
   def self.root
-    File.expand_path('.')
+    Dir.pwd
   end
 
   def self.environment
@@ -48,7 +48,14 @@ module Dasbot
   end
 
   def self.logger
-    Logger.new(File.join(root, 'log', "#{environment}.log"))
+    return @_logger if @_logger
+    log_dir_path = File.join(root, 'log')
+    if File.exist?(log_dir_path) && File.directory?(log_dir_path)
+      @_logger = Logger.new(File.join(log_dir_path, "#{environment}.log"))
+    else
+      @_logger = Logger.new('/dev/null')
+    end
+    @_logger
   end
 
   def self.adapters
