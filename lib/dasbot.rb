@@ -9,6 +9,7 @@ require 'service'
 require 'active_record'
 require 'pg' # postgresql
 
+require 'dasbot/setup'
 require 'dasbot/event'
 require 'dasbot/version'
 require 'dasbot/input'
@@ -41,6 +42,10 @@ module Dasbot
 
   def self.root
     Dir.pwd
+  end
+
+  def self.setup(name, options = {})
+    Dasbot::Setup.run!(name, options)
   end
 
   def self.environment

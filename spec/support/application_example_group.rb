@@ -1,8 +1,22 @@
 require 'shellwords'
+require 'fileutils'
 
 module ApplicationExampleGroup
 
   attr_writer :env_vars
+
+  def setup_application(options = {})
+    Dasbot.setup(application_name, { path: application_path }.merge(options))
+  end
+
+  def setup_application!(options = {})
+    teardown_application!
+    setup_application(options)
+  end
+
+  def teardown_application!
+    FileUtils.rm_rf application_path
+  end
 
   def application_name
     metadata = self.class.metadata
@@ -13,7 +27,7 @@ module ApplicationExampleGroup
   end
 
   def application_path
-    File.expand_path(File.join(File.dirname(__FILE__), '..', 'example_apps', application_name))
+    File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'tmp', application_name))
   end
 
   def env_vars
@@ -28,5 +42,5 @@ module ApplicationExampleGroup
 end
 
 RSpec.configure do |config|
-  config.include ApplicationExampleGroup, type: :application, file_path: %r{spec/applications}
+  config.include ApplicationExampleGroup, type: :application
 end
