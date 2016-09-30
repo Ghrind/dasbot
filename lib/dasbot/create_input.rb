@@ -18,7 +18,7 @@ module Dasbot
     end
 
     def headers
-      @request.env.slice(*Adapters.accepted_headers)
+      @request.env.slice(*Dasbot::Adapters.accepted_headers)
     end
 
     def attributes

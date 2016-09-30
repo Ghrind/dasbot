@@ -7,7 +7,7 @@ module Dasbot
     private
 
     def execute
-      @adapter = Adapters.get(@input.adapter_name)
+      @adapter = Dasbot::Adapters.get(@input.adapter_name)
       @adapter.processor.run!(@input)
       # @input.update_attribute :state, 'processed'
     end

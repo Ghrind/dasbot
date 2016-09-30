@@ -14,7 +14,7 @@ module Dasbot
     private
 
     def self.adapter(adapter_name, options = {})
-      adapter = Adapters.get(adapter_name)
+      adapter = Dasbot::Adapters.get(adapter_name)
       endpoint = adapter.endpoint(options[:endpoint])
       send(endpoint[:verb], endpoint[:path]) do
         CreateInput.run!(adapter, request, params)
