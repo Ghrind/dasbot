@@ -32,7 +32,7 @@ module Dasbot
     @_initialized = true
   end
 
-  def self.has_adapter?(adapter_name)
+  def self.adapter?(adapter_name)
     adapters.include?(adapter_name.to_sym)
   end
 
@@ -55,12 +55,11 @@ module Dasbot
   def self.logger
     return @_logger if @_logger
     log_dir_path = File.join(root, 'log')
-    if File.exist?(log_dir_path) && File.directory?(log_dir_path)
-      @_logger = Logger.new(File.join(log_dir_path, "#{environment}.log"))
-    else
-      @_logger = Logger.new('/dev/null')
-    end
-    @_logger
+    @_logger = if File.exist?(log_dir_path) && File.directory?(log_dir_path)
+                 Logger.new(File.join(log_dir_path, "#{environment}.log"))
+               else
+                 Logger.new('/dev/null')
+               end
   end
 
   def self.adapters
@@ -71,51 +70,53 @@ module Dasbot
     @_adapters = Array.wrap(*args).map(&:to_sym)
   end
 
-  private
+  class << self
+    private
 
-  def self.boot_application
-    boot_file_path = File.join(Dasbot.root, 'config', 'boot.rb')
-    require boot_file_path if File.exist?(boot_file_path)
-  end
-
-  def self.load_adapters
-    adapters.each do |adapter_name|
-      require_relative("adapters/#{adapter_name}_adapter.rb")
-      adapter = Adapters.get(adapter_name)
-      next unless adapter.respond_to?(:accepted_headers)
-      Adapters.accepted_headers += adapter.accepted_headers
+    def boot_application
+      boot_file_path = File.join(Dasbot.root, 'config', 'boot.rb')
+      require boot_file_path if File.exist?(boot_file_path)
     end
-  end
 
-  DATABASE_CONFIGURATION = {
-    adapter: 'postgresql',
-    encoding: 'unicode'
-  }
+    def load_adapters
+      adapters.each do |adapter_name|
+        require_relative("adapters/#{adapter_name}_adapter.rb")
+        adapter = Adapters.get(adapter_name)
+        next unless adapter.respond_to?(:accepted_headers)
+        Adapters.accepted_headers += adapter.accepted_headers
+      end
+    end
 
-  def self.init_database
-    configuration = DATABASE_CONFIGURATION.merge({
-      username: ENV['DATABASE_USERNAME'],
-      host:     ENV['DATABASE_HOST'],
-      pool:     ENV['DATABASE_POOL'],
-      port:     ENV['DATABASE_PORT'],
-      password: ENV['DATABASE_PASSWORD'],
-      database: ENV['DATABASE_NAME']
-    })
-    ActiveRecord::Base.establish_connection(configuration)
-    ActiveRecord::Base.logger = logger
-  end
+    DATABASE_CONFIGURATION = {
+      adapter: 'postgresql',
+      encoding: 'unicode'
+    }.freeze
 
-  def self.load_application
-    deep_load_directory File.join(root, 'app', 'models')
-    deep_load_directory File.join(root, 'app', 'workflows'), /_workflow\.rb\Z/
-  end
+    def init_database
+      configuration = DATABASE_CONFIGURATION.merge(
+        username: ENV['DATABASE_USERNAME'],
+        host:     ENV['DATABASE_HOST'],
+        pool:     ENV['DATABASE_POOL'],
+        port:     ENV['DATABASE_PORT'],
+        password: ENV['DATABASE_PASSWORD'],
+        database: ENV['DATABASE_NAME']
+      )
+      ActiveRecord::Base.establish_connection(configuration)
+      ActiveRecord::Base.logger = logger
+    end
 
-  def self.deep_load_directory(dir, pattern = /\.rb\Z/)
-    Dir.glob(File.join(dir, '*')).sort.each do |entry|
-      if File.directory?(entry)
-        deep_load_directory entry, pattern
-      elsif entry =~ pattern
-        load entry
+    def load_application
+      deep_load_directory File.join(root, 'app', 'models')
+      deep_load_directory File.join(root, 'app', 'workflows'), /_workflow\.rb\Z/
+    end
+
+    def deep_load_directory(dir, pattern = /\.rb\Z/)
+      Dir.glob(File.join(dir, '*')).sort.each do |entry|
+        if File.directory?(entry)
+          deep_load_directory entry, pattern
+        elsif entry =~ pattern
+          load entry
+        end
       end
     end
   end

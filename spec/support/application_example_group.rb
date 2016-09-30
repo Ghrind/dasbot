@@ -6,7 +6,13 @@ module ApplicationExampleGroup
   attr_writer :env_vars
 
   def setup_application(options = {})
-    Dasbot.setup(application_name, { path: application_path }.merge(options))
+    options = {
+      path: application_path,
+      gemfile: {
+        dasbot_path: '../..'
+      }
+    }
+    Dasbot.setup(application_name, { }.merge(options))
   end
 
   def setup_application!(options = {})
@@ -16,6 +22,20 @@ module ApplicationExampleGroup
 
   def teardown_application!
     FileUtils.rm_rf application_path
+  end
+
+  def application_file_content(path)
+    File.read(File.join(application_path, path))
+  end
+
+  def add_application_file(path, content)
+    full_path = File.join(application_path, path)
+    FileUtils.mkdir_p(File.dirname(full_path))
+    File.open(full_path, 'w') { |f| f << content }
+  end
+
+  def remove_application_file(path)
+    FileUtils.rm_rf(File.join(application_path, path))
   end
 
   def application_name
@@ -36,8 +56,10 @@ module ApplicationExampleGroup
 
   def run(command)
     cmd = ["cd #{application_path}"]
-    cmd << "#{env_vars.join(' ')} ./bin/runner #{Shellwords.escape('puts ' + command)}"
-    `#{cmd.join(' && ')}`.chomp
+    cmd << "#{env_vars.join(' ')} bundle exec ./bin/runner #{Shellwords.escape(command)}"
+    Bundler.with_clean_env do
+      `#{cmd.join(' && ')}`.chomp
+    end
   end
 end
 
