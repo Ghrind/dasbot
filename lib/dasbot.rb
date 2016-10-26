@@ -1,17 +1,15 @@
 require 'dotenv'
 require 'active_support'
 require 'active_support/core_ext/string/inflections'
+require 'active_support/core_ext/array/wrap.rb' 
 require 'yaml'
 require 'logger'
 require 'service'
 
-# Database
-require 'active_record'
-require 'pg' # postgresql
-
 require 'dasbot/setup'
 require 'dasbot/event'
 require 'dasbot/version'
+require 'dasbot/model'
 require 'dasbot/input'
 require 'dasbot/adapters'
 require 'dasbot/periodic_job'
@@ -25,7 +23,7 @@ module Dasbot
   def self.init!
     return false if @_initialized
     Dotenv.load('.env', ".env.#{environment}", '.env.local')
-    init_database
+    # init_database
     boot_application
     load_adapters
     load_application
@@ -81,28 +79,8 @@ module Dasbot
     def load_adapters
       adapters.each do |adapter_name|
         require_relative("adapters/#{adapter_name}_adapter.rb")
-        adapter = Dasbot::Adapters.get(adapter_name)
-        next unless adapter.respond_to?(:accepted_headers)
-        Dasbot::Adapters.accepted_headers += adapter.accepted_headers
+        Dasbot::Adapters.get(adapter_name) # Ensure the adapter is loaded
       end
-    end
-
-    DATABASE_CONFIGURATION = {
-      adapter: 'postgresql',
-      encoding: 'unicode'
-    }.freeze
-
-    def init_database
-      configuration = DATABASE_CONFIGURATION.merge(
-        username: ENV['DATABASE_USERNAME'],
-        host:     ENV['DATABASE_HOST'],
-        pool:     ENV['DATABASE_POOL'],
-        port:     ENV['DATABASE_PORT'],
-        password: ENV['DATABASE_PASSWORD'],
-        database: ENV['DATABASE_NAME']
-      )
-      ActiveRecord::Base.establish_connection(configuration)
-      ActiveRecord::Base.logger = logger
     end
 
     def load_application

@@ -17,7 +17,7 @@ module Dasbot
 
     def perform_once
       begin
-        input = Input.pending.first
+        input = Input.first_pending
         return false unless input
         ProcessInput.run!(input)
         return true

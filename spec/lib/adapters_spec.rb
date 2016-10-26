@@ -27,18 +27,4 @@ RSpec.describe Dasbot::Adapters, type: :application do
     it { is_expected.to eq 'GithubAdapter' }
   end
 
-  describe '#accepted_headers' do
-    let(:command) { 'puts Dasbot::Adapters.accepted_headers' }
-
-    before do
-      add_application_file 'config/boot.rb', 'Dasbot.adapters = :github'
-    end
-
-    after do
-      remove_application_file 'config/boot.rb'
-    end
-
-    it { is_expected.not_to be_blank }
-  end
-
 end

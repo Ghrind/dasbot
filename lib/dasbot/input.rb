@@ -1,5 +1,8 @@
 module Dasbot
-  class Input < ActiveRecord::Base
-    scope :pending, -> { where(state: 'pending') }
+  class Input < Dasbot::Model
+    def self.first_pending
+      record = records.detect(&:pending)
+      record ? record.dup : nil
+    end
   end
 end

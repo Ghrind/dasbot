@@ -9,7 +9,7 @@ module Dasbot
     private
 
     def execute
-      Dasbot::Input.create! attributes
+      Dasbot::Input.create attributes
     end
 
     def body
@@ -18,7 +18,7 @@ module Dasbot
     end
 
     def headers
-      @request.env.slice(*Dasbot::Adapters.accepted_headers)
+      @request.env.slice(*@adapter.accepted_headers)
     end
 
     def attributes
@@ -26,9 +26,8 @@ module Dasbot
         adapter_name: @adapter.adapter_name.to_s,
         body: body,
         headers: headers,
-        params: @params,
-        state: 'pending',
-        type: @adapter.input_class
+        params: @params.to_hash,
+        state: 'pending'
       }
     end
   end

@@ -1,4 +1,3 @@
-require_relative 'github_adapter/input'
 require_relative 'github_adapter/process_input'
 
 module GithubAdapter
@@ -23,9 +22,5 @@ module GithubAdapter
 
   def self.endpoint(options = {})
     DEFAULT_ENDPOINT.merge(options || {})
-  end
-
-  def self.input_class
-    GithubAdapter::Input
   end
 end
