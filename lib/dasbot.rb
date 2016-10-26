@@ -5,6 +5,7 @@ require 'active_support/core_ext/array/wrap.rb'
 require 'yaml'
 require 'logger'
 require 'service'
+require 'redis'
 
 require 'dasbot/setup'
 require 'dasbot/event'
@@ -23,7 +24,7 @@ module Dasbot
   def self.init!
     return false if @_initialized
     Dotenv.load('.env', ".env.#{environment}", '.env.local')
-    # init_database
+    init_storage
     boot_application
     load_adapters
     load_application
@@ -96,6 +97,10 @@ module Dasbot
           load entry
         end
       end
+    end
+
+    def init_storage
+      Redis.current = Redis.connect host: ENV['REDIS_HOST']
     end
   end
 end

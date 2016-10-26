@@ -27,7 +27,7 @@ module GithubAdapter
 
     def execute
       Dasbot::Event.trigger event_name, payload
-      @input.update_attribute :state, 'processed'
+      Dasbot::Input.set(@input.id, @input.to_h.merge(state: 'processed'))
     end
 
     def pull_request_action

@@ -31,8 +31,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rake", "~> 10.0"
   spec.add_dependency 'activesupport'
+  # NOTE: This is used by the validations of Service::Base object, which aren't used as of now.
   spec.add_dependency 'activemodel'
-  spec.add_dependency 'pg', '~> 0.18.4'
+  spec.add_dependency 'redis'
   spec.add_dependency 'pry'
   spec.add_dependency 'sinatra'
   spec.add_dependency 'dotenv'

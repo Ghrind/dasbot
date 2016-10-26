@@ -2,15 +2,25 @@ require 'ostruct'
 
 module Dasbot
   class Model < OpenStruct
-    def self.set(id, attributes)
-      index = records.find_index { |r| r.id == id }
-      record = new(attributes.merge(id: id))
-      if index
-        records[index] = record
+    attr_reader :_redis_key
+
+    def initialize(*args)
+      if args.first.is_a? String
+        super JSON.parse(args.first)
+        @_redis_key = args.first
       else
-        records << record
+        super
       end
-      record
+    end
+
+    def self.set(id, attributes)
+      record = records.detect { |r| r.id == id }
+      Redis.current.srem(name, record._redis_key) if record
+
+      attributes.merge!(id: id)
+      Redis.current.sadd(name, attributes.to_json)
+
+      new attributes
     end
 
     def self.create(attributes)
@@ -19,11 +29,11 @@ module Dasbot
     end
 
     def self.truncate!
-      @_records = nil
+      Redis.current.del(name)
     end
-    
+
     def self.records
-      @_records ||= []
+      (Redis.current.smembers(name) || []).map { |r| new r }
     end
   end
 end

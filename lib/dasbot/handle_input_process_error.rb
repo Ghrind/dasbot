@@ -8,8 +8,7 @@ module Dasbot
     private
 
     def execute
-      Input.set(@input.id, @input.to_h.merge(state: 'process_error'))
-      @input.update_attribute :state, 'process_error'
+      Dasbot::Input.set(@input.id, @input.to_h.merge(state: 'process_error'))
     end
   end
 end
