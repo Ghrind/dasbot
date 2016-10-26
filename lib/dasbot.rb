@@ -100,7 +100,7 @@ module Dasbot
     end
 
     def init_storage
-      Redis.current = Redis.connect host: ENV['REDIS_HOST']
+      Redis.current = Redis.connect host: ENV['REDIS_HOST'], port: ENV['REDIS_PORT']
     end
   end
 end
